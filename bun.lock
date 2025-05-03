@@ -5,6 +5,7 @@
       "name": "bun-basket",
       "dependencies": {
         "@arcjet/bun": "^1.0.0-beta.6",
+        "@arcjet/inspect": "^1.0.0-beta.6",
         "@neondatabase/serverless": "^1.0.0",
         "cors": "^2.8.5",
         "express": "^5.1.0",
@@ -35,6 +36,8 @@
     "@arcjet/env": ["@arcjet/env@1.0.0-beta.6", "", {}, "sha512-WFehWJShBLt9JiniW4Jc+lLSe9c7M7ThvnCj3sOn5pudZ1Kvlxwic39QzYl+7GEp5QVFqNyfci0daMSTeYyIAw=="],
 
     "@arcjet/headers": ["@arcjet/headers@1.0.0-beta.6", "", {}, "sha512-u8x3SS4tw6FZOq8md/yA6iqFX9UQpSr+66iL2J8vaegLxocgTBzsij9JKcENs/W8B/qH1D4Y6Q8OnN5xjtrNwg=="],
+
+    "@arcjet/inspect": ["@arcjet/inspect@1.0.0-beta.6", "", { "dependencies": { "@arcjet/protocol": "1.0.0-beta.6" } }, "sha512-+HJIfMdNz9iz3lu95JG0/cCGAT2SwUQECIqrt2aCX3CFz82gNegA6BnrRdAzxXcN8wcHuLXpXXFLxQmAvMCHaw=="],
 
     "@arcjet/ip": ["@arcjet/ip@1.0.0-beta.6", "", {}, "sha512-ugMOBkpZ6pKBL9uF/KOYBU9blVhi6AwpkQydeiVAmip9Cg0mA1H1cBh2DEItRpuMUKXg24rTwTrd2l68qxq7Yw=="],
 

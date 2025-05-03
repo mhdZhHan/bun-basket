@@ -11,6 +11,18 @@ const EnvSchema = z.object({
     "trace",
     "silent",
   ]),
+  PORT: z.preprocess((val) => Number(val), z.number().positive().default(8080)),
+  // database
+  DATABASE_URL: z.string(),
+
+  PGHOST: z.string(),
+  PGDATABASE: z.string(),
+  PGUSER: z.string(),
+  PGPASSWORD: z.string(),
+
+  // arcjet
+  ARCJET_KEY: z.string(),
+  ARCJET_ENV: z.string(),
 });
 
 const processEnv = EnvSchema.safeParse(process.env);
