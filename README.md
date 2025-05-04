@@ -8,7 +8,7 @@ A lightweight, secure, and scalable REST API for managing products, built with *
 - 🔐 Security with Helmet
 - 🧾 Structured logging via Pino
 - ✅ Request validation with Zod schemas
-- ⚡ Ultra-lightweight SQL queries using `postgres.js`
+- ⚡ Ultra-lightweight SQL queries using `bun-sql`
 - 📦 Products CRUD API
 - 🧙‍♂️ Superpowered `migrate.ts` for handling database migrations (with advisory locks!)
 
