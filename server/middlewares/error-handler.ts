@@ -1,12 +1,14 @@
 import type { Response, Request, NextFunction } from "express";
-import { errorResponse } from "@/lib/utils";
+import { logger } from "@/configs/logger";
 
 export function errorHandler(
   error: any,
   req: Request,
   res: Response,
   next: NextFunction
-) {
-  console.error(error);
-  errorResponse(res, 500, error);
+): void {
+  logger.error("Server Error: ", error);
+  res
+    .status(500)
+    .json({ success: false, message: "Server Error", error: error.message });
 }
