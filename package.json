@@ -20,7 +20,6 @@
     "@arcjet/bun": "^1.0.0-beta.6",
     "@arcjet/inspect": "^1.0.0-beta.6",
     "@neondatabase/serverless": "^1.0.0",
-    "cors": "^2.8.5",
     "express": "^5.1.0",
     "helmet": "^8.1.0",
     "pino": "^9.6.0",
