@@ -13,6 +13,7 @@ const EnvSchema = z.object({
   ]),
   PORT: z.preprocess((val) => Number(val), z.number().positive().default(8080)),
   // database
+  MIGRATIONS_TABLE: z.string().default("migrations"),
   DATABASE_URL: z.string(),
 
   PGHOST: z.string(),
