@@ -1,6 +1,5 @@
 import fs from "fs/promises";
 import path from "path";
-
 import { sql } from "@/db";
 import env from "@/env";
 
@@ -11,7 +10,7 @@ const MIGRATIONS_TABLE = env.MIGRATIONS_TABLE || "migrations";
 async function acquireLock() {
   const result = await sql`SELECT pg_try_advisory_lock(12345) AS acquired`;
   if (!result[0].acquired) {
-    throw new Error("Could not acquire migration lock");
+    throw new Error("Failed to acquire migration lock");
   }
 }
 
@@ -20,19 +19,27 @@ async function releaseLock() {
   await sql`SELECT pg_advisory_unlock(12345)`;
 }
 
+async function ensureMigrationsTable() {
+  await sql`
+    CREATE TABLE IF NOT EXISTS ${sql(MIGRATIONS_TABLE)} (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      executed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+}
+
 async function runMigration(file: string, direction: "up" | "down") {
   const migration = await import(path.join(MIGRATIONS_DIR, file));
   if (typeof migration[direction] !== "function") {
-    throw new Error(
-      `Migration ${file} does not export a valid ${direction} function`
-    );
+    throw new Error(`Migration ${file} lacks a valid ${direction} function`);
   }
   console.log(`Running ${direction} for ${file}...`);
   await migration[direction]();
   if (direction === "up") {
-    await sql`INSERT INTO ${MIGRATIONS_TABLE} (name) VALUES (${file})`;
+    await sql`INSERT INTO ${sql(MIGRATIONS_TABLE)} (name) VALUES (${file})`;
   } else {
-    await sql`DELETE FROM ${MIGRATIONS_TABLE} WHERE name = ${file}`;
+    await sql`DELETE FROM ${sql(MIGRATIONS_TABLE)} WHERE name = ${file}`;
   }
   console.log(`Completed ${direction} for ${file}`);
 }
@@ -40,27 +47,14 @@ async function runMigration(file: string, direction: "up" | "down") {
 async function migrate(direction: "up" | "down") {
   await acquireLock();
   try {
+    await ensureMigrationsTable();
     const files = (await fs.readdir(MIGRATIONS_DIR))
       .filter((f) => f.endsWith(".ts") || f.endsWith(".js"))
       .sort();
 
-    const tableExists = await sql`
-      SELECT EXISTS (
-        SELECT FROM information_schema.tables 
-        WHERE table_name = ${MIGRATIONS_TABLE}
-      ) AS table_exists
-    `.then((res) => res[0].table_exists);
-
-    if (!tableExists && direction === "down") {
-      console.log("No migrations table found, nothing to roll back.");
-      return;
-    }
-
-    const executedMigrations = tableExists
-      ? await sql`SELECT name FROM ${MIGRATIONS_TABLE} ORDER BY name`.then(
-          (res) => res.map((r: any) => r.name)
-        )
-      : [];
+    const executedMigrations = await sql`
+      SELECT name FROM ${sql(MIGRATIONS_TABLE)} ORDER BY name
+    `.then((res) => res.map((r: any) => r.name));
 
     for (const file of files) {
       if (
@@ -83,6 +77,9 @@ async function main() {
   }
 
   try {
+    if (!env.DATABASE_URL) {
+      throw new Error("DATABASE_URL is not set");
+    }
     await migrate(direction!);
     console.log(`${direction} migrations completed successfully`);
   } catch (error) {
