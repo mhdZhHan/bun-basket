@@ -1,5 +1,6 @@
 import express from "express";
 import helmet from "helmet";
+import cors from "cors";
 
 import { logger } from "@/configs/logger";
 import { errorHandler } from "@/middlewares/error-handler";
@@ -12,16 +13,18 @@ import productsRoutes from "@/routes/products.route";
 const app = express();
 const port = env.PORT || 8080;
 
-// middlewares
+// Middlewares
+app.use(cors());
 app.use(express.json());
 app.use(helmet());
-
 app.use(pinoLogger);
-app.use(errorHandler);
 
-// routes
+// Routes
 app.use("/api", indexRoutes);
 app.use("/api/products", productsRoutes);
+
+// Error handler
+app.use(errorHandler);
 
 app
   .listen(port, () => {
